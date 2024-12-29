@@ -66,7 +66,13 @@ async function loadFromDepInfo(artifactPath: string): Promise<string[]> {
     const depInfoPath = path.format({ dir, name, ext: '.d' });
 
     // Read the file
-    const fileData = await fs.readFile(depInfoPath, { encoding: 'utf8' });
+    let fileData: string;
+    try {
+        fileData = await fs.readFile(depInfoPath, { encoding: "utf8" });
+    } catch (e) {
+        console.error(`Failed to read dep-info file ${depInfoPath}: ${e}`);
+        return [];
+    }
 
     // Parse the dep-info
     const depInfo = parseRustcDepInfo(fileData);

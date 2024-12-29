@@ -75,7 +75,18 @@ export async function lint(): Promise<void> {
 }
 test.description = 'Runs lint';
 
-export const build = gulp.series(clean, gulp.parallel(bundle, types));
+// TODO(jlfwong): The original version of this line also did type generation.
+// I disabled it because of depedency rot leading to build failure.
+//
+// [17:36:46] 'types' errored after 208 ms
+// [17:36:46] Error: You must provide the URL of lib/mappings.wasm by calling SourceMapConsumer.initialize({ 'lib/mappings.wasm': ... }) before using SourceMapConsumer
+//     at readWasm (/Users/jlfwong/code/esbuild-plugin-wasm-pack/node_modules/gulp-typescript/node_modules/source-map/lib/read-wasm.js:8:13)
+//     at wasm (/Users/jlfwong/code/esbuild-plugin-wasm-pack/node_modules/gulp-typescript/node_modules/source-map/lib/wasm.js:25:16)
+//     at /Users/jlfwong/code/esbuild-plugin-wasm-pack/node_modules/gulp-typescript/node_modules/source-map/lib/source-map-consumer.js:264:14
+//     at processTicksAndRejections (node:internal/process/task_queues:105:5)
+//
+// export const build = gulp.series(clean, gulp.parallel(bundle, types));
+export const build = gulp.series(clean, gulp.parallel(bundle));
 export const prepare = gulp.series(build);
 export const prepublishOnly = gulp.series(lint, test);
 export default build;
